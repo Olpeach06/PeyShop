@@ -7,6 +7,13 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using PeyShop.Data;
 using PeyShop.Models;
+using System.Security.Claims;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using PeyShop.Data;
+using PeyShop.Models;
 
 namespace PeyShop.Controllers
 {
@@ -47,9 +54,11 @@ namespace PeyShop.Controllers
             return View(product);
         }
 
-        // GET: Products/Create
+        // Ограничиваем доступ к созданию продуктов только администраторами
+        [Authorize(Roles = "админ")] // пример для встроенных ролей
         public IActionResult Create()
         {
+            CheckUserAccess(); // дополнительная проверка роли пользователя
             ViewData["CategoryId"] = new SelectList(_context.Categories, "CategoryId", "Name");
             ViewData["FirmId"] = new SelectList(_context.Firms, "FirmId", "Name");
             ViewData["TypeOfPrTypeId"] = new SelectList(_context.TypeOfPr, "TypeId", "Name");
@@ -57,12 +66,14 @@ namespace PeyShop.Controllers
         }
 
         // POST: Products/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        // Для защиты от атак избыточной передачи данных включите конкретные свойства,
+        // к которым хотите привязаться. Дополнительные сведения см.: https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "админ")] // ограничиваем создание продуктов только администраторами
         public async Task<IActionResult> Create([Bind("ProductId,Name,Price,Quantity,Description,Image,CategoryId,TypeOfPrTypeId,FirmId")] Product product)
         {
+            CheckUserAccess(); // дополнительная проверка роли пользователя
             if (ModelState.IsValid)
             {
                 _context.Add(product);
@@ -75,9 +86,11 @@ namespace PeyShop.Controllers
             return View(product);
         }
 
-        // GET: Products/Edit/5
+        // Ограничиваем доступ к редактированию товаров только администраторами
+        [Authorize(Roles = "админ")] // ограничение на уровне атрибутов
         public async Task<IActionResult> Edit(int? id)
         {
+            CheckUserAccess(); // дополнительная проверка роли пользователя
             if (id == null)
             {
                 return NotFound();
@@ -95,12 +108,14 @@ namespace PeyShop.Controllers
         }
 
         // POST: Products/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        // Чтобы защитить от атак чрезмерной отправки данных, разрешите привязывать к определенным свойствам.
+        // Подробности см. здесь: https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "админ")] // разрешаем редактировать только администраторам
         public async Task<IActionResult> Edit(int id, [Bind("ProductId,Name,Price,Quantity,Description,Image,CategoryId,TypeOfPrTypeId,FirmId")] Product product)
         {
+            CheckUserAccess(); // дополнительная проверка роли пользователя
             if (id != product.ProductId)
             {
                 return NotFound();
@@ -132,9 +147,11 @@ namespace PeyShop.Controllers
             return View(product);
         }
 
-        // GET: Products/Delete/5
+        // Ограничиваем удаление продуктов только администраторами
+        [Authorize(Roles = "админ")] // защита удаления только для админов
         public async Task<IActionResult> Delete(int? id)
         {
+            CheckUserAccess(); // дополнительная проверка роли пользователя
             if (id == null)
             {
                 return NotFound();
@@ -156,8 +173,10 @@ namespace PeyShop.Controllers
         // POST: Products/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "админ")] // удаляем продукт только администратору
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
+            CheckUserAccess(); // дополнительная проверка роли пользователя
             var product = await _context.Products.FindAsync(id);
             if (product != null)
             {
@@ -171,6 +190,20 @@ namespace PeyShop.Controllers
         private bool ProductExists(int id)
         {
             return _context.Products.Any(e => e.ProductId == id);
+        }
+
+        /// <summary>
+        /// Метод дополнительной проверки текущего пользователя.
+        /// Проверяет роль пользователя и выводит уведомление, если роль неподходящая.
+        /// </summary>
+        private void CheckUserAccess()
+        {
+            var userRoleClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
+            if (string.Equals(userRoleClaim, "2")) // предположим, что "2" означает обычного пользователя
+            {
+                TempData["ErrorMessage"] = "У вас нет прав доступа.";
+                RedirectToAction(nameof(Index)); // переходим на индексную страницу товаров
+            }
         }
     }
 }
