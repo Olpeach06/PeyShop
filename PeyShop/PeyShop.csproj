@@ -18,4 +18,12 @@
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.7" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\images-jpg\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="wwwroot\images-jpg\acana.jpg" />
+  </ItemGroup>
+
 </Project>

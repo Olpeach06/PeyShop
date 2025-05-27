@@ -61,11 +61,16 @@ namespace PeyShop.Controllers
         {
             if (!ModelState.IsValid)
             {
-                user.RoleId = 2;
+                // По умолчанию устанавливаем роль пользователя (если нужно)
+                user.RoleId = 2; // или другой ID нужной роли
+
                 _context.Add(user);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+
+                // Перенаправляем на страницу авторизации после успешной регистрации
+                return RedirectToAction("Login", "Account");
             }
+
             ViewData["RoleId"] = new SelectList(_context.Roles, "RoleId", "Name", user.RoleId);
             return View(user);
         }

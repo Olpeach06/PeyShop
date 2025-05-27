@@ -1,14 +1,13 @@
 ﻿@model PeyShop.Models.User
 
 @{
-    ViewData["Title"] = "Delete";
+    ViewData["Title"] = "Details";
 }
 
-<h1>Удалить</h1>
+<h1>Details</h1>
 
-<h3>Вы действительно хотите удалить?</h3>
 <div>
-    <h4>пользователь</h4>
+    <h4>User</h4>
     <hr />
     <dl class="row">
         <dt class = "col-sm-2">
@@ -48,10 +47,8 @@
             @Html.DisplayFor(model => model.Role.Name)
         </dd>
     </dl>
-    
-    <form asp-action="Delete">
-        <input type="hidden" asp-for="UsersId" />
-        <input type="submit" value="Удалить" class="btn btn-danger" /> |
-        <a asp-action="Index">Назад</a>
-    </form>
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model?.UsersId">Edit</a> |
+    <a asp-action="Index">Back to List</a>
 </div>

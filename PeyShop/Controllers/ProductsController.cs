@@ -22,7 +22,8 @@ namespace PeyShop.Controllers
         // GET: Products
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Products.ToListAsync());
+            var applicationDbContext = _context.Products.Include(p => p.Category).Include(p => p.Firm).Include(p => p.TypeOfPr);
+            return View(await applicationDbContext.ToListAsync());
         }
 
         // GET: Products/Details/5
@@ -34,6 +35,9 @@ namespace PeyShop.Controllers
             }
 
             var product = await _context.Products
+                .Include(p => p.Category)
+                .Include(p => p.Firm)
+                .Include(p => p.TypeOfPr)
                 .FirstOrDefaultAsync(m => m.ProductId == id);
             if (product == null)
             {
@@ -46,6 +50,9 @@ namespace PeyShop.Controllers
         // GET: Products/Create
         public IActionResult Create()
         {
+            ViewData["CategoryId"] = new SelectList(_context.Categories, "CategoryId", "Name");
+            ViewData["FirmId"] = new SelectList(_context.Firms, "FirmId", "Name");
+            ViewData["TypeOfPrTypeId"] = new SelectList(_context.TypeOfPr, "TypeId", "Name");
             return View();
         }
 
@@ -54,7 +61,7 @@ namespace PeyShop.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ProductId,Name,Price,Quantity,Description,Image")] Product product)
+        public async Task<IActionResult> Create([Bind("ProductId,Name,Price,Quantity,Description,Image,CategoryId,TypeOfPrTypeId,FirmId")] Product product)
         {
             if (ModelState.IsValid)
             {
@@ -62,6 +69,9 @@ namespace PeyShop.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+            ViewData["CategoryId"] = new SelectList(_context.Categories, "CategoryId", "Name", product.CategoryId);
+            ViewData["FirmId"] = new SelectList(_context.Firms, "FirmId", "Name", product.FirmId);
+            ViewData["TypeOfPrTypeId"] = new SelectList(_context.TypeOfPr, "TypeId", "Name", product.TypeOfPrTypeId);
             return View(product);
         }
 
@@ -78,6 +88,9 @@ namespace PeyShop.Controllers
             {
                 return NotFound();
             }
+            ViewData["CategoryId"] = new SelectList(_context.Categories, "CategoryId", "Name", product.CategoryId);
+            ViewData["FirmId"] = new SelectList(_context.Firms, "FirmId", "Name", product.FirmId);
+            ViewData["TypeOfPrTypeId"] = new SelectList(_context.TypeOfPr, "TypeId", "Name", product.TypeOfPrTypeId);
             return View(product);
         }
 
@@ -86,7 +99,7 @@ namespace PeyShop.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("ProductId,Name,Price,Quantity,Description,Image")] Product product)
+        public async Task<IActionResult> Edit(int id, [Bind("ProductId,Name,Price,Quantity,Description,Image,CategoryId,TypeOfPrTypeId,FirmId")] Product product)
         {
             if (id != product.ProductId)
             {
@@ -113,6 +126,9 @@ namespace PeyShop.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
+            ViewData["CategoryId"] = new SelectList(_context.Categories, "CategoryId", "Name", product.CategoryId);
+            ViewData["FirmId"] = new SelectList(_context.Firms, "FirmId", "Name", product.FirmId);
+            ViewData["TypeOfPrTypeId"] = new SelectList(_context.TypeOfPr, "TypeId", "Name", product.TypeOfPrTypeId);
             return View(product);
         }
 
@@ -125,6 +141,9 @@ namespace PeyShop.Controllers
             }
 
             var product = await _context.Products
+                .Include(p => p.Category)
+                .Include(p => p.Firm)
+                .Include(p => p.TypeOfPr)
                 .FirstOrDefaultAsync(m => m.ProductId == id);
             if (product == null)
             {

@@ -38,6 +38,18 @@
                 <span asp-validation-for="Image" class="text-danger"></span>
             </div>
             <div class="form-group">
+                <label asp-for="CategoryId" class="control-label"></label>
+                <select asp-for="CategoryId" class ="form-control" asp-items="ViewBag.CategoryId"></select>
+            </div>
+            <div class="form-group">
+                <label asp-for="TypeOfPrTypeId" class="control-label"></label>
+                <select asp-for="TypeOfPrTypeId" class ="form-control" asp-items="ViewBag.TypeOfPrTypeId"></select>
+            </div>
+            <div class="form-group">
+                <label asp-for="FirmId" class="control-label"></label>
+                <select asp-for="FirmId" class ="form-control" asp-items="ViewBag.FirmId"></select>
+            </div>
+            <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>
         </form>
@@ -48,6 +60,3 @@
     <a asp-action="Index">Back to List</a>
 </div>
 
-@section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-}
