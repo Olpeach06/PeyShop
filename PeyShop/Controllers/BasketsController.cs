@@ -218,5 +218,67 @@ namespace PeyShop.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        [Authorize]
+        [HttpPost]
+        public async Task<IActionResult> Checkout()
+        {
+
+            var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+
+            // Получаем все товары в корзине пользователя
+            var basketItems = await _context.Baskets
+                .Include(b => b.Product)
+                .Where(b => b.UserId == userId)
+                .ToListAsync();
+            foreach (var item in basketItems)
+            {
+                if (item.Product.Quantity < item.Quantity)
+                {
+                    TempData["ErrorMessage"] = $"Товара '{item.Product.Name}' недостаточно на складе";
+                    return RedirectToAction(nameof(Index));
+                }
+            }
+            if (!basketItems.Any())
+            {
+                TempData["ErrorMessage"] = "Ваша корзина пуста";
+                return RedirectToAction(nameof(Index));
+            }
+
+            // Создаем новый заказ
+            var order = new Zakaz
+            {
+                UserId = userId,
+                Date = DateTime.Now,
+                StatusId = 1
+            };
+            _context.Zakazy.Add(order);
+            await _context.SaveChangesAsync();
+
+            // Добавляем товары в заказ и обновляем количество на складе
+            foreach (var item in basketItems)
+            {
+                var purchase = new Purchase
+                {
+                    ZakazId = order.ZakazId,
+                    ProductId = item.ProductId,
+                    Quantity = item.Quantity,
+                    //Price = item.Product.Price
+                };
+                _context.Purchases.Add(purchase);
+
+                // Уменьшаем количество товара на складе
+                item.Product.Quantity -= item.Quantity;
+                _context.Products.Update(item.Product);
+            }
+
+            // Очищаем корзину
+            _context.Baskets.RemoveRange(basketItems);
+
+            await _context.SaveChangesAsync();
+
+            TempData["SuccessMessage"] = "Ваш заказ оформлен!";
+            return RedirectToAction(nameof(Index));
+        }
+
     }
 }

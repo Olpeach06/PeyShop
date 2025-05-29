@@ -1,4 +1,17 @@
-﻿@model IEnumerable<PeyShop.Models.Basket>
+﻿@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["SuccessMessage"]
+    </div>
+}
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["ErrorMessage"]
+    </div>
+}
+
+@model IEnumerable<PeyShop.Models.Basket>
 
 @{
     ViewData["Title"] = "Корзина";
@@ -58,7 +71,9 @@
     </table>
 
     <a asp-controller="Products" asp-action="Index" class="btn btn-secondary">Продолжить покупки</a>
-    <a asp-controller="Orders" asp-action="Checkout" class="btn btn-primary">Оформить заказ</a>
+    <form asp-action="Checkout" method="post">
+        <button type="submit" class="btn btn-primary">Оформить заказ</button>
+    </form>
 }
 else
 {

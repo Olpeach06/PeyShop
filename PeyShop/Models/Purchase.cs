@@ -7,8 +7,10 @@ namespace PeyShop.Models
         [Key]
         public int PurchaseId { get; set; }
 
+        public int ZakazId { get; set; }
         public Zakaz Zakaz { get; set; }
 
+        public int ProductId { get; set; }
         public Product Product { get; set; }
 
         [Range(1, int.MaxValue)]
