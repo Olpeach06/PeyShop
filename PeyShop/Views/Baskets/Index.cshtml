@@ -1,35 +1,56 @@
 ﻿@model IEnumerable<PeyShop.Models.Basket>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Корзина";
 }
 
-<h1>Корзина</h1>
+<h1>Ваша корзина</h1>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Quantity)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Quantity)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.BasketId">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.BasketId">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.BasketId">Delete</a>
-            </td>
-        </tr>
+@if (Model.Any())
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Товар</th>
+                <th>Цена</th>
+                <th>Количество</th>
+                <th>Сумма</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.Product.Name</td>
+                    <td>@item.Product.Price.ToString("C")</td>
+                    <td>@item.Quantity</td>
+                    <td>@((item.Product.Price * item.Quantity).ToString("C"))</td>
+                    <td>
+                        <form asp-action="RemoveFromBasket" method="post">
+                            <input type="hidden" name="id" value="@item.BasketId" />
+                            <button type="submit" class="btn btn-danger">Удалить</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="3"><strong>Итого:</strong></td>
+                <td><strong>@Model.Sum(i => i.Product.Price * i.Quantity).ToString("C"))</strong></td>
+                <td></td>
+            </tr>
+        </tfoot>
+    </table>
+
+    <a asp-controller="Products" asp-action="Index" class="btn btn-secondary">Продолжить покупки</a>
+    <a asp-controller="Orders" asp-action="Checkout" class="btn btn-primary">Оформить заказ</a>
 }
-    </tbody>
-</table>
+else
+{
+    <div class="alert alert-info">
+        Ваша корзина пуста
+    </div>
+    <a asp-controller="Products" asp-action="Index" class="btn btn-primary">Начать покупки</a>
+}

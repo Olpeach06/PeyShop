@@ -12,8 +12,8 @@ using PeyShop.Data;
 namespace PeyShop.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250527061938_111")]
-    partial class _111
+    [Migration("20250529091813_123")]
+    partial class _123
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -237,14 +237,14 @@ namespace PeyShop.Migrations
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
 
-                    b.Property<int>("UsersId")
+                    b.Property<int>("UserId")
                         .HasColumnType("int");
 
                     b.HasKey("BasketId");
 
                     b.HasIndex("ProductId");
 
-                    b.HasIndex("UsersId");
+                    b.HasIndex("UserId");
 
                     b.ToTable("Baskets");
                 });
@@ -313,8 +313,8 @@ namespace PeyShop.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<decimal>("Price")
-                        .HasColumnType("decimal(18,2)");
+                    b.Property<int>("Price")
+                        .HasColumnType("int");
 
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
@@ -541,7 +541,7 @@ namespace PeyShop.Migrations
 
                     b.HasOne("PeyShop.Models.User", "User")
                         .WithMany("Baskets")
-                        .HasForeignKey("UsersId")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

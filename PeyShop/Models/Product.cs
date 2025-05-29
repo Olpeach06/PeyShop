@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace PeyShop.Models
 {
@@ -16,7 +17,7 @@ namespace PeyShop.Models
 
         [Range(0, double.MaxValue)]
         [Display(Name = "Цена")]
-        public decimal Price { get; set; }
+        public int Price { get; set; }
 
         [Range(0, int.MaxValue)]
         [Display(Name = "Количество на складе")]

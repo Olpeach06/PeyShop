@@ -10,10 +10,7 @@ using PeyShop.Models;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using PeyShop.Data;
-using PeyShop.Models;
+
 
 namespace PeyShop.Controllers
 {
@@ -74,7 +71,7 @@ namespace PeyShop.Controllers
         public async Task<IActionResult> Create([Bind("ProductId,Name,Price,Quantity,Description,Image,CategoryId,TypeOfPrTypeId,FirmId")] Product product)
         {
             CheckUserAccess(); // дополнительная проверка роли пользователя
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
                 _context.Add(product);
                 await _context.SaveChangesAsync();
