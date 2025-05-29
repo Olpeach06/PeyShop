@@ -22,18 +22,31 @@
             @foreach (var item in Model)
             {
                 <tr>
-                    <td>@item.Product.Name</td>
-                    <td>@item.Product.Price.ToString("C")</td>
-                    <td>@item.Quantity</td>
-                    <td>@((item.Product.Price * item.Quantity).ToString("C"))</td>
+                    @if (item.Product != null)
+                    {
+                        <td>@item.Product.Name</td>
+                        <td>@item.Product.Price.ToString("C")</td>
+                        <td>@item.Quantity</td>
+                        <td>@((item.Product.Price * item.Quantity).ToString("C"))</td>
+                    }
+                    else
+                    {
+                        <td colspan="4">Товар недоступен</td>
+                    }
                     <td>
                         <form asp-action="RemoveFromBasket" method="post">
                             <input type="hidden" name="id" value="@item.BasketId" />
                             <button type="submit" class="btn btn-danger">Удалить</button>
                         </form>
+                        <form asp-action="UpdateQuantity" method="post">
+                            <input type="hidden" name="id" value="@item.BasketId" />
+                            @* <input type="number" name="quantity" value="@item.Quantity" min="1" max="@item.Product.Quantity" /> *@
+                            @* <button type="submit" class="btn btn-sm btn-info">Обновить</button> *@
+                        </form>
                     </td>
                 </tr>
             }
+            
         </tbody>
         <tfoot>
             <tr>

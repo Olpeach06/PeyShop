@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -20,9 +22,19 @@ namespace PeyShop.Controllers
         }
 
         // GET: Baskets
+        //public async Task<IActionResult> Index()
+        //{
+        //    return View(await _context.Baskets.ToListAsync());
+        //}
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Baskets.ToListAsync());
+            var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)); // Получаем ID текущего пользователя
+            var baskets = await _context.Baskets
+                .Include(b => b.Product) // Загружаем связанный Product
+                .Where(b => b.UserId == userId) // Фильтруем по текущему пользователю
+                .ToListAsync();
+
+            return View(baskets);
         }
 
         // GET: Baskets/Details/5
@@ -153,5 +165,58 @@ namespace PeyShop.Controllers
         {
             return _context.Baskets.Any(e => e.BasketId == id);
         }
+
+
+        [Authorize]
+        [HttpPost]
+        public async Task<IActionResult> AddToBasket(int productId, int quantity = 1)
+        {
+            var product = await _context.Products.FindAsync(productId);
+            if (product == null || product.Quantity < quantity)
+            {
+                TempData["ErrorMessage"] = "Товар недоступен или недостаточно на складе";
+                return RedirectToAction("Index", "Products");
+            }
+            // Получаем текущего пользователя
+            var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+
+            // Проверяем, есть ли уже такой товар в корзине пользователя
+            var existingBasketItem = await _context.Baskets
+                .FirstOrDefaultAsync(b => b.ProductId == productId && b.UserId == userId);
+
+            if (existingBasketItem != null)
+            {
+                // Если товар уже есть в корзине, увеличиваем количество
+                existingBasketItem.Quantity += quantity;
+            }
+            else
+            {
+                // Если товара нет в корзине, добавляем новый
+                var basketItem = new Basket
+                {
+                    ProductId = productId,
+                    UserId = userId,
+                    Quantity = quantity
+                };
+                _context.Baskets.Add(basketItem);
+            }
+
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("Index", "Products");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> RemoveFromBasket(int id)
+        {
+            var basketItem = await _context.Baskets.FindAsync(id);
+            if (basketItem != null)
+            {
+                _context.Baskets.Remove(basketItem);
+                await _context.SaveChangesAsync();
+            }
+            return RedirectToAction(nameof(Index));
+        }
+
     }
 }
