@@ -27,7 +27,11 @@ namespace PeyShop.Controllers
         public async Task<IActionResult> Index()
         {
             var applicationDbContext = _context.Products.Include(p => p.Category).Include(p => p.Firm).Include(p => p.TypeOfPr);
-            return View(await applicationDbContext.ToListAsync());
+            var categories = _context.Categories.ToList();
+            ViewBag.Categories = categories; // Добавьте эту строку
+            //var products = _context.Products.Include(p => p.Category).Include(p => p.Firm).Include(p => p.TypeOfPr). ToList();
+            //return View(products);
+           return View(await applicationDbContext.ToListAsync());
         }
 
         // GET: Products/Details/5

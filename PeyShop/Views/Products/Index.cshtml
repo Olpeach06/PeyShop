@@ -13,21 +13,50 @@
 </div>
 
 <div class="container mb-5">
-    <!-- Search and Add Button -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <input type="text" id="searchInput" class="form-control" placeholder="Поиск товаров..." style="width: 300px; border-radius: 20px; padding: 10px 20px;">
+    <!-- Filters and Add Button -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="d-flex gap-3">
+                <div class="flex-grow-1">
+                    <input type="text" id="searchInput" class="form-control" placeholder="Поиск товаров..." style="border-radius: 20px; padding: 10px 20px;">
+                </div>
+               <div>
+                    <select id="categoryFilter" class="form-select" style="border-radius: 20px; padding: 10px 20px;">
+                        <option value="">Все категории</option>
+                        @if (ViewBag.Categories != null)
+                        {
+                            @foreach (var category in ViewBag.Categories as IEnumerable<PeyShop.Models.Category>)
+                            {
+                                <option value="@category.CategoryId">@category.Name</option>
+                            }
+                        }
+                    </select>
+                </div>
+            </div>
         </div>
-        <a asp-action="Create" class="btn btn-success" style="border-radius: 20px; padding: 10px 20px;">
-            <i class="fas fa-plus"></i> Добавить товар
-        </a>
+        <div class="col-md-6">
+            <div class="d-flex justify-content-end gap-3">
+                <div>
+                    <select id="priceSort" class="form-select" style="border-radius: 20px; padding: 10px 20px;">
+                        <option value="default">По умолчанию</option>
+                        <option value="asc">По возрастанию цены</option>
+                        <option value="desc">По убыванию цены</option>
+                    </select>
+                </div>
+                <div>
+                    <a asp-action="Create" class="btn btn-success" style="border-radius: 20px; padding: 10px 20px;">
+                        <i class="fas fa-plus"></i> Добавить товар
+                    </a>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Products Grid -->
-    <div class="row">
+    <div class="row" id="productsContainer">
         @foreach (var item in Model)
         {
-            <div class="col-lg-4 col-md-6 mb-4 product-card">
+            <div class="col-lg-4 col-md-6 mb-4 product-card" data-category="@item.CategoryId" data-price="@item.Price">
                 <div class="card h-100 shadow-sm border-0" style="border-radius: 15px; overflow: hidden; transition: transform 0.3s;">
                     <div class="position-relative">
                         <img src="@Url.Content("~/images-jpg/" + item.Image)" class="card-img-top" alt="@item.Name" style="height: 200px; object-fit: cover;">
@@ -108,7 +137,82 @@
     </div>
 }
 
-<!-- Styles and Scripts -->
+@section Scripts {
+    <script>
+        $(document).ready(function(){
+            // Состояние фильтров
+            let currentCategory = "";
+            let currentSort = "default";
+            let searchQuery = "";
+            
+            // Инициализация элементов управления
+            $("#categoryFilter").val(currentCategory);
+            $("#priceSort").val(currentSort);
+            
+            // Обработчики событий
+            $("#searchInput").on("keyup", function() {
+                searchQuery = $(this).val().toLowerCase();
+                applyFilters();
+            });
+            
+            $("#categoryFilter").change(function() {
+                currentCategory = $(this).val();
+                applyFilters();
+            });
+            
+            $("#priceSort").change(function() {
+                currentSort = $(this).val();
+                applyFilters();
+            });
+            
+            // Основная функция фильтрации и сортировки
+            function applyFilters() {
+                $(".product-card").each(function() {
+                    const $card = $(this);
+                    const productText = $card.text().toLowerCase();
+                    const productCategory = $card.data("category").toString();
+                    const productPrice = parseFloat($card.data("price"));
+                    
+                    // Проверка поискового запроса
+                    const matchesSearch = searchQuery === "" || 
+                                        productText.indexOf(searchQuery) > -1;
+                    
+                    // Проверка категории
+                    const matchesCategory = currentCategory === "" || 
+                                          productCategory === currentCategory;
+                    
+                    // Показываем/скрываем карточку
+                    $card.toggle(matchesSearch && matchesCategory);
+                });
+                
+                // Сортировка
+                sortProducts();
+            }
+            
+            // Функция сортировки
+            function sortProducts() {
+                const $container = $("#productsContainer");
+                const $products = $(".product-card").filter(":visible").toArray();
+                
+                $products.sort((a, b) => {
+                    const priceA = parseFloat($(a).data("price"));
+                    const priceB = parseFloat($(b).data("price"));
+                    
+                    if (currentSort === "asc") return priceA - priceB;
+                    if (currentSort === "desc") return priceB - priceA;
+                    return 0; // default - порядок как в HTML
+                });
+                
+                $container.empty().append($products);
+            }
+            
+            // Инициализация
+            applyFilters();
+        });
+    </script>
+}
+
+<!-- Styles -->
 <style>
     .product-card:hover {
         transform: translateY(-5px);
@@ -125,21 +229,11 @@
     .badge {
         font-weight: 500;
     }
+    
+    select.form-select {
+        cursor: pointer;
+    }
 </style>
-
-@section Scripts {
-    <script>
-        // Search functionality
-        $(document).ready(function(){
-            $("#searchInput").on("keyup", function() {
-                var value = $(this).val().toLowerCase();
-                $(".product-card").filter(function() {
-                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
-                });
-            });
-        });
-    </script>
-}
 
 <!-- Add Font Awesome -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
