@@ -1,66 +1,166 @@
 ﻿@model PeyShop.Models.Product
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Детали товара";
 }
 
-<h1>Детали</h1>
+<!-- Hero Section -->
+<div class="details-hero mb-5" style="background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('/images-jpg/pets.jpg') no-repeat center center; background-size: cover; height: 200px; display: flex; align-items: center; color: white;">
+    <div class="container">
+        <h1 class="display-5" style="font-weight: 700; text-shadow: 2px 2px 4px rgba(0,0,0,0.5);">@Model.Name</h1>
+        <p class="lead" style="text-shadow: 1px 1px 2px rgba(0,0,0,0.5);">Полная информация о товаре</p>
+    </div>
+</div>
 
-<div>
-    <h4>продукта</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Name)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Name)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Price)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Price)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Quantity)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Quantity)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Description)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Description)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Image)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Image)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Category)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Category.Name)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.TypeOfPr)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.TypeOfPr.Name)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Firm)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Firm.Name)
-        </dd>
-    </dl>
+<div class="container">
+    <div class="row">
+        <!-- Product Image -->
+        <div class="col-lg-5 mb-4">
+            <div class="card shadow-sm border-0 h-100" style="border-radius: 15px; overflow: hidden;">
+                <img src="@Url.Content("~/images-jpg/" + Model.Image)" class="card-img-top" alt="@Model.Name" style="height: 400px; object-fit: contain; background-color: #f8f9fa;">
+                <div class="card-footer bg-white text-center">
+                    <span class="badge @(Model.Quantity > 0 ? "bg-success" : "bg-danger") fs-6 p-2">
+                        @(Model.Quantity > 0 ? "В наличии" : "Нет в наличии")
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Product Details -->
+        <div class="col-lg-7">
+            <div class="card shadow-sm border-0 h-100" style="border-radius: 15px;">
+                <div class="card-header bg-white">
+                    <h3 class="mb-0" style="font-weight: 600;">
+                        <i class="fas fa-info-circle text-primary me-2"></i>Информация о товаре
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-borderless">
+                            <tbody>
+                                <tr>
+                                    <th width="30%">Название:</th>
+                                    <td>@Model.Name</td>
+                                </tr>
+                                <tr>
+                                    <th>Цена:</th>
+                                    <td>@Model.Price.ToString("C")</td>
+                                </tr>
+                                <tr>
+                                    <th>Количество:</th>
+                                    <td>@Model.Quantity шт.</td>
+                                </tr>
+                                <tr>
+                                    <th>Категория:</th>
+                                    <td>
+                                        <span class="badge bg-light text-dark">@Model.Category?.Name</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Тип товара:</th>
+                                    <td>
+                                        <span class="badge bg-light text-dark">@Model.TypeOfPr?.Name</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Производитель:</th>
+                                    <td>
+                                        <span class="badge bg-light text-dark">@Model.Firm?.Name</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Описание:</th>
+                                    <td>@Model.Description</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="d-flex flex-wrap gap-3 mt-4 pt-3 border-top">
+                        <a asp-action="Edit" asp-route-id="@Model.ProductId" class="btn btn-primary px-4">
+                            <i class="fas fa-edit me-2"></i>Редактировать
+                        </a>
+                        <a asp-action="Index" class="btn btn-outline-secondary px-4">
+                            <i class="fas fa-arrow-left me-2"></i>Назад к списку
+                        </a>
+                        
+                        @if (User.Identity.IsAuthenticated && Model.Quantity > 0)
+                        {
+                            <form asp-controller="Baskets" asp-action="AddToBasket" method="post" class="d-flex align-items-center ms-auto">
+                                <input type="hidden" name="productId" value="@Model.ProductId" />
+                                <input type="number" name="quantity" value="1" min="1" max="@Model.Quantity" 
+                                       class="form-control" style="width: 80px;">
+                                <button type="submit" class="btn btn-success ms-2">
+                                    <i class="fas fa-shopping-cart me-2"></i>В корзину
+                                </button>
+                            </form>
+                        }
+                        else if (Model.Quantity <= 0)
+                        {
+                            <button class="btn btn-secondary ms-auto" disabled>
+                                <i class="fas fa-times-circle me-2"></i>Нет в наличии
+                            </button>
+                        }
+                        else
+                        {
+                            <a asp-controller="Account" asp-action="Login" class="btn btn-warning ms-auto">
+                                <i class="fas fa-sign-in-alt me-2"></i>Войдите, чтобы купить
+                            </a>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.ProductId">Редактировать</a> |
-    <a asp-action="Index">Назад</a>
-</div>
+
+<!-- Styles -->
+<style>
+    .card {
+        transition: all 0.3s ease;
+        border: none;
+    }
+    
+    .card-header {
+        border-bottom: 1px solid rgba(0,0,0,0.1);
+        background-color: #f8f9fa;
+    }
+    
+    th {
+        font-weight: 600;
+        color: #6c757d;
+    }
+    
+    .badge {
+        font-weight: 500;
+        font-size: 0.9em;
+    }
+    
+    .btn {
+        border-radius: 8px;
+        padding: 8px 20px;
+        font-weight: 500;
+        transition: all 0.3s;
+    }
+    
+    .btn-primary {
+        background-color: #4e9f3d;
+        border-color: #4e9f3d;
+    }
+    
+    .btn-primary:hover {
+        background-color: #3e7d34;
+        border-color: #3e7d34;
+    }
+    
+    .table-borderless tbody tr:not(:last-child) {
+        border-bottom: 1px solid #eee;
+    }
+</style>
+
+<!-- Add Font Awesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+<!-- Add Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">

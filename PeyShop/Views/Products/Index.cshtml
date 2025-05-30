@@ -1,94 +1,148 @@
 ﻿@model IEnumerable<PeyShop.Models.Product>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Каталог товаров";
 }
 
-<h1>Каталог товаров</h1>
+<!-- Hero Section -->
+<div class="catalog-hero mb-5" style="background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('/images-jpg/pets.jpg') no-repeat center center; background-size: cover; height: 300px; display: flex; align-items: center; color: white;">
+    <div class="container">
+        <h1 class="display-4" style="font-weight: 700; text-shadow: 2px 2px 4px rgba(0,0,0,0.5);">Каталог товаров</h1>
+        <p class="lead" style="text-shadow: 1px 1px 2px rgba(0,0,0,0.5);">Всё для здоровья и радости ваших питомцев</p>
+    </div>
+</div>
 
-<p>
-    <a asp-action="Create">Добавить</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Name)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Price)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Quantity)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Description)
-            </th>
-            
-             <th>
-             @Html.DisplayNameFor(model => model.First().CategoryId) <!-- Измените на CategoryId -->
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.First().TypeOfPrTypeId) <!-- Измените на TypeOfPrTypeId -->
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.First().FirmId) <!-- Измените на FirmId -->
-            <th>
-                @Html.DisplayNameFor(model => model.Image)
-            </th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Price)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Quantity)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Description)
-            </td>
-            
-            <td>
-                @Html.DisplayFor(modelItem => item.Category.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.TypeOfPr.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Firm.Name)
-            </td>
-            
-            <td>
-                <img src="@Url.Content("~/images-jpg/" + item.Image)" style="width:100px; height:auto;" />
-            </td>
-                <td>
-                    <div class="d-flex flex-wrap gap-2 align-items-center">
-                        <a asp-action="Edit" asp-route-id="@item.ProductId" class="btn btn-sm btn-outline-primary">Редактировать</a>
-                        <a asp-action="Details" asp-route-id="@item.ProductId" class="btn btn-sm btn-outline-secondary">Детали</a>
-                        <a asp-action="Delete" asp-route-id="@item.ProductId" class="btn btn-sm btn-outline-danger">Удалить</a>
+<div class="container mb-5">
+    <!-- Search and Add Button -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <input type="text" id="searchInput" class="form-control" placeholder="Поиск товаров..." style="width: 300px; border-radius: 20px; padding: 10px 20px;">
+        </div>
+        <a asp-action="Create" class="btn btn-success" style="border-radius: 20px; padding: 10px 20px;">
+            <i class="fas fa-plus"></i> Добавить товар
+        </a>
+    </div>
 
-                        @if (User.Identity.IsAuthenticated)
+    <!-- Products Grid -->
+    <div class="row">
+        @foreach (var item in Model)
+        {
+            <div class="col-lg-4 col-md-6 mb-4 product-card">
+                <div class="card h-100 shadow-sm border-0" style="border-radius: 15px; overflow: hidden; transition: transform 0.3s;">
+                    <div class="position-relative">
+                        <img src="@Url.Content("~/images-jpg/" + item.Image)" class="card-img-top" alt="@item.Name" style="height: 200px; object-fit: cover;">
+                        @if (item.Quantity > 0)
                         {
-                            <form asp-controller="Baskets" asp-action="AddToBasket" method="post">
-                                <input type="hidden" name="productId" value="@item.ProductId" />
-                                <input type="number" name="quantity" value="1" min="1" max="@item.Quantity" style="width: 50px;" />
-                                <button type="submit" class="btn btn-primary">В корзину</button>
-                            </form>
+                            <span class="badge bg-success position-absolute" style="top: 10px; right: 10px;">В наличии</span>
                         }
                         else
                         {
-                            <a asp-controller="Account" asp-action="Login" class="btn btn-primary">Войдите, чтобы добавить в корзину</a>
+                            <span class="badge bg-danger position-absolute" style="top: 10px; right: 10px;">Нет в наличии</span>
                         }
                     </div>
-                </td>
-        </tr>
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <h5 class="card-title mb-0" style="font-weight: 600;">@item.Name</h5>
+                            <span class="text-success fw-bold">@item.Price.ToString("C")</span>
+                        </div>
+                        <div class="mb-2">
+                            <span class="badge bg-light text-dark me-1">@item.Category?.Name</span>
+                            <span class="badge bg-light text-dark">@item.Firm?.Name</span>
+                        </div>
+                        <p class="card-text text-muted small" style="height: 40px; overflow: hidden; text-overflow: ellipsis;">@item.Description</p>
+                    </div>
+                    <div class="card-footer bg-white border-0 pt-0">
+                        <div class="d-flex flex-wrap gap-2">
+                            <a asp-action="Details" asp-route-id="@item.ProductId" class="btn btn-sm btn-outline-primary flex-grow-1">
+                                <i class="fas fa-info-circle"></i> Подробнее
+                            </a>
+                            @if (User.Identity.IsAuthenticated && item.Quantity > 0)
+                            {
+                                <form asp-controller="Baskets" asp-action="AddToBasket" method="post" class="d-flex flex-grow-1">
+                                    <input type="hidden" name="productId" value="@item.ProductId" />
+                                    <input type="number" name="quantity" value="1" min="1" max="@item.Quantity" class="form-control form-control-sm" style="width: 60px;">
+                                    <button type="submit" class="btn btn-sm btn-success ms-2">
+                                        <i class="fas fa-shopping-cart"></i>
+                                    </button>
+                                </form>
+                            }
+                            else if (item.Quantity <= 0)
+                            {
+                                <button class="btn btn-sm btn-secondary flex-grow-1" disabled>Нет в наличии</button>
+                            }
+                            else
+                            {
+                                <a asp-controller="Account" asp-action="Login" class="btn btn-sm btn-warning flex-grow-1">
+                                    <i class="fas fa-sign-in-alt"></i> Войти
+                                </a>
+                            }
+                        </div>
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <div class="d-flex gap-2 mt-2">
+                                <a asp-action="Edit" asp-route-id="@item.ProductId" class="btn btn-sm btn-outline-secondary flex-grow-1">
+                                    <i class="fas fa-edit"></i> Редактировать
+                                </a>
+                                <a asp-action="Delete" asp-route-id="@item.ProductId" class="btn btn-sm btn-outline-danger flex-grow-1">
+                                    <i class="fas fa-trash-alt"></i> Удалить
+                                </a>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
 
+<!-- Empty State -->
+@if (!Model.Any())
+{
+    <div class="text-center py-5 my-5">
+        <i class="fas fa-box-open fa-4x text-muted mb-4"></i>
+        <h3 class="text-muted">Товары не найдены</h3>
+        <p class="text-muted">Попробуйте изменить параметры поиска или добавить новый товар</p>
+        <a asp-action="Create" class="btn btn-primary mt-3">
+            <i class="fas fa-plus"></i> Добавить товар
+        </a>
+    </div>
 }
-    </tbody>
-</table>
+
+<!-- Styles and Scripts -->
+<style>
+    .product-card:hover {
+        transform: translateY(-5px);
+    }
+    
+    .card {
+        transition: all 0.3s ease;
+    }
+    
+    .card:hover {
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
+    
+    .badge {
+        font-weight: 500;
+    }
+</style>
+
+@section Scripts {
+    <script>
+        // Search functionality
+        $(document).ready(function(){
+            $("#searchInput").on("keyup", function() {
+                var value = $(this).val().toLowerCase();
+                $(".product-card").filter(function() {
+                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+                });
+            });
+        });
+    </script>
+}
+
+<!-- Add Font Awesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+<!-- Add Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">

@@ -1,8 +1,117 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Добро пожаловать в мир заботы о питомцах";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Добро пожаловать в наш магазин зоотоваров!</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+<!-- Hero Section -->
+<section class="hero-section" style="background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('/images-jpg/pets.jpg') no-repeat center center; background-size: cover; height: 80vh; display: flex; align-items: center; justify-content: center; color: white; text-align: center;">
+    <div class="container">
+        <h1 class="hero-title" style="font-size: 3.5rem; font-weight: 700; margin-bottom: 1.5rem; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); font-family: 'Montserrat', sans-serif;">
+            Мир заботы и радости для ваших питомцев
+        </h1>
+        <p class="hero-subtitle" style="font-size: 1.5rem; max-width: 800px; margin: 0 auto; text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);">
+            Всё лучшее для тех, кто делает нашу жизнь ярче и теплее
+        </p>
+        <a href="/products" class="btn btn-primary mt-4" style="padding: 12px 30px; font-size: 1.1rem; border-radius: 30px; background-color: #4e9f3d; border: none; transition: all 0.3s ease;">
+            В каталог товаров
+        </a>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="features-section py-5" style="background-color: #f8f9fa;">
+    <div class="container">
+        <div class="row text-center">
+            <div class="col-md-4 mb-4">
+                <div class="feature-icon" style="font-size: 3rem; color: #4e9f3d; margin-bottom: 1rem;">
+                    <i class="fas fa-paw"></i>
+                </div>
+                <h3 style="font-family: 'Montserrat', sans-serif;">Качественные товары</h3>
+                <p>Только проверенные бренды и премиум-корма для здоровья ваших любимцев</p>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="feature-icon" style="font-size: 3rem; color: #4e9f3d; margin-bottom: 1rem;">
+                    <i class="fas fa-heart"></i>
+                </div>
+                <h3 style="font-family: 'Montserrat', sans-serif;">С заботой о питомцах</h3>
+                <p>Мы тщательно отбираем ассортимент, чтобы обеспечить комфорт и безопасность</p>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="feature-icon" style="font-size: 3rem; color: #4e9f3d; margin-bottom: 1rem;">
+                    <i class="fas fa-headset"></i>
+                </div>
+                <h3 style="font-family: 'Montserrat', sans-serif;">Экспертная поддержка</h3>
+                <p>Наши консультанты помогут подобрать идеальные решения для вашего питомца</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- About Section -->
+<section class="about-section py-5">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6 mb-4">
+                <img src="/images-jpg/pets-about.jpg" alt="Наши питомцы" class="img-fluid rounded shadow" style="max-height: 500px; width: 100%; object-fit: cover;">
+            </div>
+            <div class="col-lg-6">
+                <h2 class="mb-4" style="font-family: 'Montserrat', sans-serif; color: #4e9f3d;">О нашем магазине</h2>
+                <p style="font-size: 1.1rem; line-height: 1.6;">
+                    Наш магазин — это не просто место покупок, а настоящее сообщество любителей животных. 
+                    Мы создали уютное пространство, где каждый владелец питомца найдёт всё необходимое 
+                    для счастливой жизни своего любимца.
+                </p>
+                <p style="font-size: 1.1rem; line-height: 1.6;">
+                    Наш ассортимент включает корма премиум-класса, экологичные игрушки, стильные аксессуары 
+                    и профессиональные средства ухода. Мы регулярно обновляем коллекцию, следуя последним 
+                    тенденциям ветеринарии и этичного содержания животных.
+                </p>
+                
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Testimonials Section -->
+<section class="testimonials-section py-5" style="background-color: #e8f5e9;">
+    <div class="container">
+        <h2 class="text-center mb-5" style="font-family: 'Montserrat', sans-serif; color: #4e9f3d;">Отзывы наших клиентов</h2>
+        <div class="row">
+            <div class="col-md-4 mb-4">
+                <div class="testimonial-card p-4 shadow-sm rounded" style="background-color: white; height: 100%;">
+                    <div class="mb-3" style="color: #ffc107; font-size: 1.2rem;">
+                        ★ ★ ★ ★ ★
+                    </div>
+                    <p class="mb-3" style="font-style: italic;">"Лучший зоомагазин в городе! Всегда свежие корма и огромный выбор аксессуаров для моей кошки."</p>
+                    <p class="mb-0" style="font-weight: 600;">— Анна К.</p>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="testimonial-card p-4 shadow-sm rounded" style="background-color: white; height: 100%;">
+                    <div class="mb-3" style="color: #ffc107; font-size: 1.2rem;">
+                        ★ ★ ★ ★ ★
+                    </div>
+                    <p class="mb-3" style="font-style: italic;">"Консультанты реально знают своё дело! Помогли подобрать идеальный корм для моего аллергичного пса."</p>
+                    <p class="mb-0" style="font-weight: 600;">— Михаил С.</p>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="testimonial-card p-4 shadow-sm rounded" style="background-color: white; height: 100%;">
+                    <div class="mb-3" style="color: #ffc107; font-size: 1.2rem;">
+                        ★ ★ ★ ★ ★
+                    </div>
+                    <p class="mb-3" style="font-style: italic;">"Атмосфера в магазине потрясающая! Чувствуется, что здесь действительно любят животных."</p>
+                    <p class="mb-0" style="font-weight: 600;">— Елена В.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+
+
+<!-- Add Font Awesome for icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+<!-- Add Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">

@@ -27,7 +27,7 @@ namespace PeyShop.Models
         [Display(Name = "Описание")]
         public string Description { get; set; }
 
-        [Url]
+        
         [Display(Name = "Изображение продукта")]
         public string Image { get; set; }
 

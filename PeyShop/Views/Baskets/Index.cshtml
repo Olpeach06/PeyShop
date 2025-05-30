@@ -1,13 +1,15 @@
 ﻿@if (TempData["SuccessMessage"] != null)
 {
-    <div class="alert alert-success">
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
         @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 }
 @if (TempData["ErrorMessage"] != null)
 {
-    <div class="alert alert-danger">
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
         @TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 }
 
@@ -17,68 +19,101 @@
     ViewData["Title"] = "Корзина";
 }
 
-<h1>Ваша корзина</h1>
-
-@if (Model.Any())
-{
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Товар</th>
-                <th>Цена</th>
-                <th>Количество</th>
-                <th>Сумма</th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in Model)
-            {
-                <tr>
-                    @if (item.Product != null)
-                    {
-                        <td>@item.Product.Name</td>
-                        <td>@item.Product.Price.ToString("C")</td>
-                        <td>@item.Quantity</td>
-                        <td>@((item.Product.Price * item.Quantity).ToString("C"))</td>
-                    }
-                    else
-                    {
-                        <td colspan="4">Товар недоступен</td>
-                    }
-                    <td>
-                        <form asp-action="RemoveFromBasket" method="post">
-                            <input type="hidden" name="id" value="@item.BasketId" />
-                            <button type="submit" class="btn btn-danger">Удалить</button>
-                        </form>
-                        <form asp-action="UpdateQuantity" method="post">
-                            <input type="hidden" name="id" value="@item.BasketId" />
-                            @* <input type="number" name="quantity" value="@item.Quantity" min="1" max="@item.Product.Quantity" /> *@
-                            @* <button type="submit" class="btn btn-sm btn-info">Обновить</button> *@
-                        </form>
-                    </td>
-                </tr>
-            }
-            
-        </tbody>
-        <tfoot>
-            <tr>
-                <td colspan="3"><strong>Итого:</strong></td>
-                <td><strong>@Model.Sum(i => i.Product.Price * i.Quantity).ToString("C"))</strong></td>
-                <td></td>
-            </tr>
-        </tfoot>
-    </table>
-
-    <a asp-controller="Products" asp-action="Index" class="btn btn-secondary">Продолжить покупки</a>
-    <form asp-action="Checkout" method="post">
-        <button type="submit" class="btn btn-primary">Оформить заказ</button>
-    </form>
-}
-else
-{
-    <div class="alert alert-info">
-        Ваша корзина пуста
+<!-- Hero Section -->
+<div class="cart-hero mb-5" style="background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('/images-jpg/pets.jpg') no-repeat center center; background-size: cover; height: 200px; display: flex; align-items: center; color: white;">
+    <div class="container">
+        <h1 class="display-5" style="font-weight: 700; text-shadow: 2px 2px 4px rgba(0,0,0,0.5);">Ваша корзина</h1>
+        <p class="lead" style="text-shadow: 1px 1px 2px rgba(0,0,0,0.5);">Просмотрите выбранные товары</p>
     </div>
-    <a asp-controller="Products" asp-action="Index" class="btn btn-primary">Начать покупки</a>
-}
+</div>
+
+<div class="container">
+    @if (Model.Any())
+    {
+        <div class="card shadow-sm border-0" style="border-radius: 15px; overflow: hidden;">
+            <div class="card-header bg-white py-3">
+                <h5 class="mb-0" style="font-weight: 600;">
+                    <i class="fas fa-shopping-cart text-primary me-2"></i>Содержимое корзины
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Товар</th>
+                                <th>Цена</th>
+                                <th>Количество</th>
+                                <th>Сумма</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    @if (item.Product != null)
+                                    {
+                                        <td>@item.Product.Name</td>
+                                        <td>@item.Product.Price.ToString("C")</td>
+                                        <td>@item.Quantity</td>
+                                        <td>@((item.Product.Price * item.Quantity).ToString("C"))</td>
+                                    }
+                                    else
+                                    {
+                                        <td colspan="4">Товар недоступен</td>
+                                    }
+                                    <td>
+                                        <form asp-action="RemoveFromBasket" method="post">
+                                            <input type="hidden" name="id" value="@item.BasketId" />
+                                            <button type="submit" class="btn btn-sm btn-outline-danger">
+                                                <i class="fas fa-trash-alt me-1"></i> Удалить
+                                            </button>
+                                        </form>
+                                        <form asp-action="UpdateQuantity" method="post">
+                                            <input type="hidden" name="id" value="@item.BasketId" />
+                                        </form>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                        <tfoot class="table-group-divider">
+                            <tr>
+                                <td colspan="3" class="text-end fw-bold">Итого:</td>
+                                <td class="fw-bold">@Model.Sum(i => i.Product.Price * i.Quantity).ToString("C")</td>
+                                <td></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+
+                <div class="d-flex justify-content-between border-top pt-4 mt-3">
+                    <a asp-controller="Products" asp-action="Index" class="btn btn-outline-secondary px-4">
+                        <i class="fas fa-arrow-left me-2"></i>Продолжить покупки
+                    </a>
+                    <form asp-action="Checkout" method="post">
+                        <button type="submit" class="btn btn-primary px-4">
+                            <i class="fas fa-credit-card me-2"></i>Оформить заказ
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="card shadow-sm border-0 text-center py-5" style="border-radius: 15px;">
+            <div class="card-body">
+                <i class="fas fa-shopping-cart fa-4x text-muted mb-4"></i>
+                <h3 class="fw-bold mb-3">Ваша корзина пуста</h3>
+                <p class="text-muted mb-4">Начните добавлять товары, чтобы увидеть их здесь</p>
+                <a asp-controller="Products" asp-action="Index" class="btn btn-primary px-4">
+                    <i class="fas fa-store me-2"></i>Начать покупки
+                </a>
+            </div>
+        </div>
+    }
+</div>
+
+<!-- Add Font Awesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
