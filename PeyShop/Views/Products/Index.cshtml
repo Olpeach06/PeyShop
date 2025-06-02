@@ -72,7 +72,7 @@
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-start mb-2">
                             <h5 class="card-title mb-0" style="font-weight: 600;">@item.Name</h5>
-                            <span class="text-success fw-bold">@item.Price.ToString("C")</span>
+                            <span class="text-success fw-bold">@item.Price ₽</span>
                         </div>
                         <div class="mb-2">
                             <span class="badge bg-light text-dark me-1">@item.Category?.Name</span>
@@ -139,77 +139,85 @@
 
 @section Scripts {
     <script>
-        $(document).ready(function(){
+        $(document).ready(function() {
             // Состояние фильтров
             let currentCategory = "";
             let currentSort = "default";
             let searchQuery = "";
-            
+
+            // Сохраняем исходный порядок карточек
+            const originalProducts = $(".product-card").toArray();
+
             // Инициализация элементов управления
             $("#categoryFilter").val(currentCategory);
             $("#priceSort").val(currentSort);
-            
+
             // Обработчики событий
             $("#searchInput").on("keyup", function() {
                 searchQuery = $(this).val().toLowerCase();
                 applyFilters();
             });
-            
+
             $("#categoryFilter").change(function() {
                 currentCategory = $(this).val();
                 applyFilters();
             });
-            
+
             $("#priceSort").change(function() {
                 currentSort = $(this).val();
                 applyFilters();
             });
-            
+
             // Основная функция фильтрации и сортировки
             function applyFilters() {
+                // Восстанавливаем исходный порядок перед применением фильтров
+                $("#productsContainer").empty().append(originalProducts);
+
                 $(".product-card").each(function() {
                     const $card = $(this);
                     const productText = $card.text().toLowerCase();
                     const productCategory = $card.data("category").toString();
                     const productPrice = parseFloat($card.data("price"));
-                    
+
                     // Проверка поискового запроса
-                    const matchesSearch = searchQuery === "" || 
-                                        productText.indexOf(searchQuery) > -1;
-                    
+                    const matchesSearch = searchQuery === "" ||
+                        productText.indexOf(searchQuery) > -1;
+
                     // Проверка категории
-                    const matchesCategory = currentCategory === "" || 
-                                          productCategory === currentCategory;
-                    
+                    const matchesCategory = currentCategory === "" ||
+                        productCategory === currentCategory;
+
                     // Показываем/скрываем карточку
                     $card.toggle(matchesSearch && matchesCategory);
                 });
-                
+
                 // Сортировка
                 sortProducts();
             }
-            
+
             // Функция сортировки
             function sortProducts() {
                 const $container = $("#productsContainer");
                 const $products = $(".product-card").filter(":visible").toArray();
-                
+
                 $products.sort((a, b) => {
                     const priceA = parseFloat($(a).data("price"));
                     const priceB = parseFloat($(b).data("price"));
-                    
+
                     if (currentSort === "asc") return priceA - priceB;
                     if (currentSort === "desc") return priceB - priceA;
                     return 0; // default - порядок как в HTML
                 });
-                
+
+                // Вставляем отсортированные элементы
                 $container.empty().append($products);
             }
-            
+
             // Инициализация
             applyFilters();
         });
     </script>
+
 }
 
 <!-- Styles -->

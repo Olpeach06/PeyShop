@@ -28,9 +28,8 @@ namespace PeyShop.Controllers
         {
             var applicationDbContext = _context.Products.Include(p => p.Category).Include(p => p.Firm).Include(p => p.TypeOfPr);
             var categories = _context.Categories.ToList();
-            ViewBag.Categories = categories; // Добавьте эту строку
-            //var products = _context.Products.Include(p => p.Category).Include(p => p.Firm).Include(p => p.TypeOfPr). ToList();
-            //return View(products);
+            ViewBag.Categories = categories; 
+
            return View(await applicationDbContext.ToListAsync());
         }
 
@@ -91,7 +90,7 @@ namespace PeyShop.Controllers
         [Authorize(Roles = "админ")] // ограничение на уровне атрибутов
         public async Task<IActionResult> Edit(int? id)
         {
-            CheckUserAccess(); // дополнительная проверка роли пользователя
+            CheckUserAccess(); 
             if (id == null)
             {
                 return NotFound();
@@ -116,7 +115,7 @@ namespace PeyShop.Controllers
         [Authorize(Roles = "админ")] // разрешаем редактировать только администраторам
         public async Task<IActionResult> Edit(int id, [Bind("ProductId,Name,Price,Quantity,Description,Image,CategoryId,TypeOfPrTypeId,FirmId")] Product product)
         {
-            CheckUserAccess(); // дополнительная проверка роли пользователя
+            CheckUserAccess(); 
             if (id != product.ProductId)
             {
                 return NotFound();
@@ -148,11 +147,11 @@ namespace PeyShop.Controllers
             return View(product);
         }
 
-        // Ограничиваем удаление продуктов только администраторами
-        [Authorize(Roles = "админ")] // защита удаления только для админов
+     
+        [Authorize(Roles = "админ")] 
         public async Task<IActionResult> Delete(int? id)
         {
-            CheckUserAccess(); // дополнительная проверка роли пользователя
+            CheckUserAccess(); 
             if (id == null)
             {
                 return NotFound();
@@ -174,10 +173,10 @@ namespace PeyShop.Controllers
         // POST: Products/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "админ")] // удаляем продукт только администратору
+        [Authorize(Roles = "админ")] 
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            CheckUserAccess(); // дополнительная проверка роли пользователя
+            CheckUserAccess(); 
             var product = await _context.Products.FindAsync(id);
             if (product != null)
             {
